@@ -1,0 +1,18 @@
+body {
+  padding: 0 10px;
+}
+
+div.title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+div {
+  margin-bottom: 1rem;
+}
+
+.barcode {
+  font-family: 'Free 3 of 9 Regular';
+  font-size: 40px;
+}
