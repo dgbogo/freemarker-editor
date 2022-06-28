@@ -26,6 +26,9 @@
         <template v-else-if="config.renderingMode == 1">
           <i class="fa-solid fa-file-pdf" /> PDF
         </template>
+        <template v-else-if="config.renderingMode == 2">
+          <i class="fa-solid fa-file-lines" /> TXT
+        </template>
       </div>
 
       <div class="separator" />
@@ -51,7 +54,7 @@
     <template v-if="result">
       <div v-show="result.rerendering" />
       <iframe
-        v-if="result.rendered && result.mode === 0"
+        v-if="result.rendered && result.renderingMode === 0"
         v-show="!result.rerendering"
         @load="frameRendered()"
         :srcdoc="result.rendered"
@@ -61,11 +64,21 @@
         width="100%"
       />
       <iframe
-        v-else-if="result.rendered && result.mode === 1"
+        v-else-if="result.rendered && result.renderingMode === 1"
         v-show="!result.rerendering"
         @load="frameRendered()"
         :src="'data:application/pdf;base64,' + result.rendered"
         class="render-frame"
+        frameborder="0"
+        height="100%"
+        width="100%"
+      />
+      <iframe
+        v-if="result.rendered && result.renderingMode === 2"
+        v-show="!result.rerendering"
+        @load="frameRendered()"
+        :srcdoc="'<code>' + plaintextToHTML(result.rendered) + '</code>'"
+        class="render-frame txt"
         frameborder="0"
         height="100%"
         width="100%"
@@ -125,7 +138,6 @@ export default {
 
       this.websocket.onmessage = (evt) => {
         const response = JSON.parse(evt.data);
-        //console.log("Response", response);
         if (!response.error) {
           this.result.rerendering = true;
           setTimeout(() => {
@@ -136,7 +148,7 @@ export default {
         this.result.stackTrace = response.stackTrace;
         this.result.timeToRenderMs = response.timeToRenderMs;
         this.result.rendered = response.html;
-        this.result.mode = response.mode;
+        this.result.renderingMode = response.renderingMode;
       };
 
       this.websocket.onclose = () => {
@@ -165,7 +177,11 @@ export default {
       return fullPath.replace(/^.*[\\/]/, "");
     },
     changeRenderingMode() {
-      this.config.renderingMode = this.config.renderingMode == 0 ? 1 : 0;
+      let newRenderingMode = this.config.renderingMode + 1;
+      if (newRenderingMode > 2) {
+        newRenderingMode = 0;
+      }
+      this.config.renderingMode = newRenderingMode;
       this.restartWebsocket();
     },
     loadConfig() {
@@ -181,6 +197,15 @@ export default {
         );
         this.$router.push({ name: "config" });
       }
+    },
+    plaintextToHTML(text) {
+      return ((text || "") + "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\t/g, "    ")
+        .replace(/ /g, "&#8203;&nbsp;&#8203;")
+        .replace(/\r\n|\r|\n/g, "<br />");
     },
   },
   mounted() {
@@ -243,6 +268,10 @@ export default {
   overflow: hidden;
   height: calc(100vh - 36px);
   width: 100%;
+}
+
+.render-frame.txt {
+  font-family: "Courier New", Courier, monospace;
 }
 
 .render-error {

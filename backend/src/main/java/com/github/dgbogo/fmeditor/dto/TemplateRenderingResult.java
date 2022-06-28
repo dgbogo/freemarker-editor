@@ -10,7 +10,7 @@ import java.util.Base64;
 @Data
 @Accessors(chain = true)
 public class TemplateRenderingResult {
-    private TemplateRenderingMode mode = TemplateRenderingMode.HTML;
+    private TemplateRenderingMode renderingMode = TemplateRenderingMode.HTML;
     private String html;
     private String error;
     private String stackTrace;
@@ -19,13 +19,20 @@ public class TemplateRenderingResult {
     public static TemplateRenderingResult fromPdf(ByteArrayOutputStream pdf, long timeToRender) {
         return new TemplateRenderingResult()
                 .setHtml(Base64.getEncoder().encodeToString(pdf.toByteArray()))
-                .setMode(TemplateRenderingMode.PDF)
+                .setRenderingMode(TemplateRenderingMode.PDF)
                 .setTimeToRenderMs(timeToRender);
     }
 
     public static TemplateRenderingResult fromHtml(String html, long timeToRender) {
         return new TemplateRenderingResult()
                 .setHtml(html)
+                .setTimeToRenderMs(timeToRender);
+    }
+
+    public static TemplateRenderingResult fromTxt(String txt, long timeToRender) {
+        return new TemplateRenderingResult()
+                .setHtml(txt)
+                .setRenderingMode(TemplateRenderingMode.TXT)
                 .setTimeToRenderMs(timeToRender);
     }
 

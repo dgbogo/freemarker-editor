@@ -134,9 +134,9 @@ export default {
   data() {
     return {
       config: {
-        templateFilePath: "TemplateFilePath",
-        dataFilePath: "DataFilePath",
-        watchFolder: "WatchFolder",
+        templateFilePath: "",
+        dataFilePath: "",
+        watchFolder: "",
         renderingMode: 0,
         customFonts: [],
       },

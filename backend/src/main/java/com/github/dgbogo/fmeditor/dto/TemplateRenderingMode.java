@@ -7,7 +7,8 @@ import java.util.Arrays;
 
 public enum TemplateRenderingMode {
     HTML(0),
-    PDF(1);
+    PDF(1),
+    TXT(2);
     
     @JsonValue
     private final int value;

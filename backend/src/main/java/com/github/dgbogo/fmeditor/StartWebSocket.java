@@ -73,9 +73,12 @@ public class StartWebSocket {
                 final var pdf = pdfRenderingService.renderPdf(html, editorConfiguration);
                 final var timeToRenderInMs = ChronoUnit.MILLIS.between(renderStart, LocalDateTime.now());
                 broadcast(TemplateRenderingResult.fromPdf(pdf, timeToRenderInMs));
-            } else {
+            } else if (editorConfiguration.renderingMode() == TemplateRenderingMode.HTML) {
                 final var timeToRenderInMs = ChronoUnit.MILLIS.between(renderStart, LocalDateTime.now());
                 broadcast(TemplateRenderingResult.fromHtml(html, timeToRenderInMs));
+            } else if (editorConfiguration.renderingMode() == TemplateRenderingMode.TXT) {
+                final var timeToRenderInMs = ChronoUnit.MILLIS.between(renderStart, LocalDateTime.now());
+                broadcast(TemplateRenderingResult.fromTxt(html, timeToRenderInMs));
             }
         } catch (Exception e) {
             broadcast(TemplateRenderingResult.fromError(e));
